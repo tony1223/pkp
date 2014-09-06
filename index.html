@@ -1,0 +1,210 @@
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>柯P政策你來批</title>
+  <meta content="柯P政策你來批" property="og:title">
+  <meta content="柯P政策你來批" property="og:site_name">
+  <meta content="http://goooooooogle.github.io/pkp/img/fb.png" property="og:image">
+  <meta content="" property="og:description">
+  <meta content="website" property="og:type">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <style>
+    .hide {
+      display: none;
+    }
+    #content {
+      margin-top: 80px;
+    }
+    .conversation-wrap {
+      box-shadow: -2px 0 3px #ddd;
+      padding:0;
+      max-height: 400px;
+      overflow: auto;
+    }
+    .conversation {
+      padding:5px;
+      border-bottom:1px solid #ddd;
+      margin:0;
+    }
+    .message-wrap {
+      box-shadow: 0 0 3px #ddd;
+      padding:0;
+    }
+    .msg {
+      padding:10px 5px;
+      border-bottom:1px solid #ddd;
+      margin:0;
+    }
+    .msg-wrap {
+      padding:10px;
+      max-height: 400px;
+      overflow: auto;
+    }
+    .time {
+      color:#bfbfbf;
+    }
+    .send-wrap {
+      margin-bottom: 10px;
+    }
+    .send-message {
+      resize: none;
+    }
+    .highlight {
+      background-color: #f7f7f9;
+      border: 1px solid #e1e1e8;
+    }
+    .send-message-btn {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .btn-panel {
+      background: #f7f7f9;
+      height: 34px;
+    }
+    .btn-panel .btn {
+      background: gold;
+      color:#999;
+      transition: 0.2s all ease-in-out;
+    }
+    .btn-panel .btn:hover {
+      color:#000;
+    }
+    .btn-panel .btn:active {
+      background: #f8f8f8;
+      box-shadow: 0 0 1px #ddd;
+    }
+    .btn-panel-conversation .btn,.btn-panel-msg .btn {
+      background: #f8f8f8;
+    }
+    .btn-panel-conversation .btn:first-child {
+      border-right: 1px solid #ddd;
+    }
+    .msg-wrap .media-heading {
+      color:#003bb3;
+      font-weight: 700;
+    }
+    .msg-date {
+      background: none;
+      text-align: center;
+      color:#aaa;
+      border:none;
+      box-shadow: none;
+      border-bottom: 1px solid #ddd;
+    }
+    .col-lg-10 {
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">柯P政策你來批</a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="navTitle">選擇你要批的政策</span> <span class="caret"></span></a>
+          <ul id="topNav" class="dropdown-menu" role="menu">
+            <li><a href="#">政策讀取中...</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-right hide">
+        <button type="button" class="btn btn-default">公民登入</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="http://kptaipei.tw" target="_blank">柯文哲官方網站</a></li>
+        <li><a href="http:/unlimited.kptaipei.tw" target="_blank">野生官網</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+<div id="content" class="row col-lg-12">
+  <div id="main" class="col-md-7" style="border-right:1px solid #ccc"></div>
+  <div id="comments" class="col-md-5">
+    <div id="commentBox">
+      <div class="form-group"><input type="text" class="form-control" id="yourname" placeholder="您的姓名"></div><div class="send-wrap "><textarea id="message" class="form-control send-message" rows="3" placeholder="請留下您對於此則政策的批評與建議"></textarea></div><div class="btn-panel"><button id="submit" class="col-lg-4 text-right btn send-message-btn pull-right"><i class="fa fa-plus"></i>我批！</button></div>
+    </div>
+    <div id="commentList"></div>
+  </div>
+</div>
+<input type="hidden" id="articleID" value="">
+<script src="//code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>
+<script src='https://cdn.firebase.com/js/client/1.0.17/firebase.js'></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
+<script>
+var api = 'kp53f568e77303e9.28212837',
+    database = new Firebase('https://p-kp.firebaseio.com');
+$(function(){
+  loadArticle(api,3233,database);
+  loadNav(api);
+  $('#topNav').on('click','.navItem',function(e){
+    e.stopPropagation();
+    e.preventDefault();
+    var id = $(this).find('input').val();
+    loadArticle(api,id,database);
+    $('#topNav').parent().removeClass('open');
+  });
+  $('#submit').click(function(){
+    var target = $('#articleID').val();
+    writeComment(database,target);
+  });
+});
+function loadArticle(apiKey,targetID,database){
+  $.get('http://api.kptaipei.tw/v1/category/40?accessToken='+apiKey,function(result){
+    $.each(result.data,function(ind,item){
+      if(item.id==targetID) {
+        var article = '<h1>'+item.title+'</h1><p>'+item.content+'</p>';
+        $('#main').html(article);
+        $('#articleID').val(item.id);
+        $('#navTitle').text(item.title);
+        readComment(database,item.id);
+      }
+    });
+  });
+}
+function loadNav(apiKey){
+  var menu='';
+  $.get('http://api.kptaipei.tw/v1/category/40?accessToken='+apiKey,function(result){
+    $.each(result.data,function(ind,item){
+      menu = '<li><a href="#" class="navItem"><span>'+item.title+'</span><input type="hidden" value="'+item.id+'"></a></li>'+menu;
+    });
+    $('#topNav').html('').append(menu);
+  });
+}
+function readComment(database,target) {
+  database.child(target).on('value',function(response) {
+    $('#commentList').html('');
+    $.each(response.val(),function(ind,item){
+      $.each(item,function(ind,comment){
+        data = '<div class="media msg"><a class="pull-left" href="#"><img class="media-object" src="http://placehold.it/48x48"></a><div class="media-body"><small class="pull-right time"><i class="fa fa-clock-o"></i> '+comment.time+'</small><h5 class="media-heading">'+comment.name+'</h5><small class="col-lg-10">'+comment.message+'</small></div></div>';
+        $('#commentList').prepend(data);
+      });
+    });
+  });
+}
+function writeComment(database,target) {
+  var time = new Date().getTime(),
+      name = $('#yourname').val(),
+      message = $('#message').val();
+  var vote = Math.floor(Math.random()*4)+1; // test only
+  database.child(target).child('message'+time).push({
+    name: name,
+    message: message,
+    time: time,
+    vote: vote
+  });
+}
+</script>
+</body>
+</html>
