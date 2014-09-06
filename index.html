@@ -131,8 +131,27 @@
   <div id="comments" class="col-md-5">
     <div id="commentBox">
       <h3>留下評語</h3>
-      <div class="form-group">
-        <input type="text" class="form-control" id="yourname" placeholder="您的姓名">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <input type="text" class="form-control" id="yourname" placeholder="您的姓名">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <select class="form-control" id="identity">
+            <option value="">--- 身分選擇 ---</option>
+            <option value="0">天龍人</option>
+            <option value="1">邊陲地區人民</option>
+            <option value="2">鄉下人</option>
+            <option value="3">非人物種</option>
+            <option value="4">高級外省人</option>
+            <option value="5">昴宿星人</option>
+            <option value="6">路人甲</option>
+            <option value="7">黨工</option>
+            <option value="8">網軍</option>
+            <option value="9">NPC</option>
+          </select>
+        </div>
       </div>
       <div class="send-wrap">
         <textarea id="message" class="form-control send-message" rows="3" placeholder="請留下您對於此則政見的評語"></textarea>
@@ -189,7 +208,7 @@ function loadArticle(apiKey,targetID,database){
         var article = '<h1>'+item.title+'</h1><p>'+item.content+'</p>';
         $('#main').html(article);
         $('#articleID').val(item.id);
-        $('#navTitle').text(item.title);
+        //$('#navTitle').text(item.title);
         readComment(database,item.id);
       }
     });
@@ -206,11 +225,12 @@ function loadNav(apiKey){
 }
 function readComment(database,target) {
   var vote = ['爛政見','不妥','已讀','適妥','好政見'];
+  var identity = ['天龍人','邊陲地區人民','鄉下人','非人物種','高級外省人','昴宿星人','路人甲','黨工','網軍','NPC'];
   database.child(target).on('value',function(response) {
     $('#commentList').html('');
     $.each(response.val(),function(ind,item){
       $.each(item,function(ind,comment){
-        var data = '<div class="media msg"><a class="pull-left"><img class="media-object" src="http://www.ie.edu/university/img/ie-way-profile-default.gif" style="width:48px; height:48px;"></a><div class="media-body"><small class="pull-right time"><i class="fa fa-clock-o"></i> '+(new Date(comment.time)).toString().substr(0,21)+' &nbsp; <span class="badge">'+vote[comment.vote]+'</span></small><h5 class="media-heading">'+comment.name+'</h5><small class="col-lg-10">'+comment.message+'</small></div></div>';
+        var data = '<div class="media msg"><a class="pull-left"><img class="media-object" src="http://www.ie.edu/university/img/ie-way-profile-default.gif" style="width:48px; height:48px;"></a><div class="media-body"><small class="pull-right time"><i class="fa fa-clock-o"></i> '+(new Date(comment.time)).toString().substr(0,21)+' &nbsp; <span class="badge">'+vote[comment.vote]+'</span></small><h5 class="media-heading">'+comment.name+' ('+identity[comment.identity]+')</h5><small class="col-lg-10">'+comment.message+'</small></div></div>';
         $('#commentList').prepend(data);
       });
     });
@@ -219,34 +239,16 @@ function readComment(database,target) {
 function writeComment(database,target) {
   var time = new Date().getTime(),
       name = $('#yourname').val(),
+      identity = $('#identity').val(),
       message = $('#message').val(),
       vote = $('#voteStar').val();
   database.child(target).child('message'+time).push({
     name: name,
+    identity: identity,
     message: message,
     time: time,
     vote: vote
   });
-}
-Date.prototype.customFormat = function(formatString){
-  var YYYY,YY,MMMM,MMM,MM,M,DDDD,DDD,DD,D,hhh,hh,h,mm,m,ss,s,ampm,AMPM,dMod,th;
-  var dateObject = this;
-  YY = ((YYYY=dateObject.getFullYear())+"").slice(-2);
-  MM = (M=dateObject.getMonth()+1)<10?('0'+M):M;
-  MMM = (MMMM=["January","February","March","April","May","June","July","August","September","October","November","December"][M-1]).substring(0,3);
-  DD = (D=dateObject.getDate())<10?('0'+D):D;
-  DDD = (DDDD=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dateObject.getDay()]).substring(0,3);
-  th=(D>=10&&D<=20)?'th':((dMod=D%10)==1)?'st':(dMod==2)?'nd':(dMod==3)?'rd':'th';
-  formatString = formatString.replace("#YYYY#",YYYY).replace("#YY#",YY).replace("#MMMM#",MMMM).replace("#MMM#",MMM).replace("#MM#",MM).replace("#M#",M).replace("#DDDD#",DDDD).replace("#DDD#",DDD).replace("#DD#",DD).replace("#D#",D).replace("#th#",th);
-
-  h=(hhh=dateObject.getHours());
-  if (h==0) h=24;
-  if (h>12) h-=12;
-  hh = h<10?('0'+h):h;
-  AMPM=(ampm=hhh<12?'am':'pm').toUpperCase();
-  mm=(m=dateObject.getMinutes())<10?('0'+m):m;
-  ss=(s=dateObject.getSeconds())<10?('0'+s):s;
-  return formatString.replace("#hhh#",hhh).replace("#hh#",hh).replace("#h#",h).replace("#mm#",mm).replace("#m#",m).replace("#ss#",ss).replace("#s#",s).replace("#ampm#",ampm).replace("#AMPM#",AMPM);
 }
 </script>
 </body>
