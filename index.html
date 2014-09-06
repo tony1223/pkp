@@ -238,6 +238,7 @@ function readComment(database,target) {
   var identity = ['天龍人','邊陲地區人民','鄉下人','非人物種','高級外省人','昴宿星人','路人甲','黨工','網軍','NPC'];
   database.child(target).on('value',function(response) {
     $('#commentList').html('');
+    if(response.val()==null) $('#commentList').html('尚無評論');
     $.each(response.val(),function(ind,item){
       $.each(item,function(ind,comment){
         var data = '<div class="media msg"><a class="pull-left"><img class="media-object" src="http://www.ie.edu/university/img/ie-way-profile-default.gif" style="width:48px; height:48px;"></a><div class="media-body"><small class="pull-right time"><i class="fa fa-clock-o"></i> '+(new Date(comment.time)).toString().substr(0,21)+' &nbsp; <span class="badge">'+vote[comment.vote]+'</span></small><h5 class="media-heading">'+comment.name+' ('+identity[comment.identity]+')</h5><small class="col-lg-10">'+comment.message+'</small></div></div>';
