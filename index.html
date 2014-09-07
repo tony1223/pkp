@@ -7,7 +7,7 @@
   <meta content="http://jiten.go-kanken.com/kanjib/972.gif" property="og:image">
   <meta content="康聖人連聲誇獎說：文章奇哉，文章妙哉，文章奇妙而絕哉！" property="og:description">
   <meta content="website" property="og:type">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
   <style>
     .hide {
       display: none;
@@ -186,9 +186,9 @@
 </div>
 <input type="hidden" id="articleID" value="">
 <input type="hidden" id="voteStar" value="2">
-<script src="http://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>
 <script src='https://cdn.firebase.com/js/client/1.0.17/firebase.js'></script>
-<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
 <script>
 var api = 'kp53f568e77303e9.28212837',
     database = new Firebase('https://p-kp.firebaseio.com/test'),
@@ -249,7 +249,6 @@ function readComment(database,target) {
     $('#commentList').html('');
     if(response.val()==null) $('#commentList').html('尚無評論');
     $.each(response.val(),function(ind,item){
-      var out = [];
       $.each(item,function(ind,comment){
         var data = '<div class="media msg"><a class="pull-left"><img class="media-object" src="http://www.ie.edu/university/img/ie-way-profile-default.gif" style="width:48px; height:48px;"></a><div class="media-body"><small class="pull-right time"><i class="fa fa-clock-o"></i> '+(new Date(comment.time)).toString().substr(0,21)+' &nbsp; <span class="badge">'+vote[comment.vote]+'</span></small><h5 class="media-heading">'+comment.name+' ('+identity[comment.identity]+')</h5><small class="col-lg-10">'+comment.message+'</small></div></div>';
         $('#commentList').prepend(data);
