@@ -249,17 +249,34 @@ function readComment(database,target) {
 }
 function writeComment(database,target) {
   var time = new Date().getTime(),
-      name = $('#yourname').val(),
-      identity = $('#identity').val(),
-      message = $('#message').val(),
-      vote = $('#voteStar').val();
-  database.child(target).child('message'+time).push({
-    name: name,
-    identity: identity,
-    message: message,
-    time: time,
-    vote: vote
-  });
+      name = strip($('#yourname').val()),
+      identity = strip($('#identity').val()),
+      message = strip($('#message').val()),
+      vote = strip($('#voteStar').val());
+      console.log(identity);
+  if(identity=='') identity = 6;
+  if(name=='') {
+    alert('請填寫您的名字');
+    $('#yourname').focus();
+  }
+  else if(message=='') {
+    alert('請填寫您的評語');
+    $('#message').focus();
+  }
+  else {
+    database.child(target).child('message'+time).push({
+      name: name,
+      identity: identity,
+      message: message,
+      time: time,
+      vote: vote
+    });
+  }
+}
+function strip(html) {
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+   return tmp.textContent || tmp.innerText || "";
 }
 </script>
 </body>
